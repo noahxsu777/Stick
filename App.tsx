@@ -1,99 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Services from './components/Services';
-import Clients from './components/Clients';
-import About from './components/About';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
+import React, { useEffect, useState } from 'react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Building2, Check, ChevronDown, ClipboardList, Clock3, Globe2, Home, Mail, MapPin, Menu, MessageCircle, Paintbrush, Phone, Sparkles, X } from 'lucide-react';
 import AIAssistant from './components/AIAssistant';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 
-type ViewState = 'home' | 'privacy' | 'terms';
 export type Language = 'en' | 'es';
+type View = 'home' | 'privacy' | 'terms';
+type ServiceKey = 'residential' | 'commercial' | 'remodeling' | 'other';
+const phone = '18608655828';
+
+const copy = {
+  en: {
+    nav: ['Home', 'Services', 'About', 'Contact'], quote: 'Get a quote', eyebrow: 'CLEAN SPACES. BETTER DAYS.', title1: 'A little more', title2: 'room to live.', intro: 'Thoughtful cleaning and remodeling for the places you call home and the spaces where you work.', location: 'Serving Connecticut & surrounding areas', explore: 'Explore services', badge: 'A fresh start, made simple.', badgeSub: 'Your space, cared for.', servicesTag: 'WHAT WE DO', servicesTitle: 'Care for every space.', servicesIntro: 'Tell us what you need. We’ll help you find the right service for your space.', serviceButton: 'Request this service',
+    services: { residential: ['Residential cleaning', 'A fresh, comfortable home with care for kitchens, bathrooms and living spaces.'], commercial: ['Commercial cleaning', 'Cleaning for offices, stores and shared spaces, tailored to your routine.'], remodeling: ['Remodeling & painting', 'Give your space a new look with painting, flooring and finishing services.'], other: ['Other service', 'Tell us what you need.'] },
+    howTag: 'SIMPLE FROM THE START', howTitle: 'A cleaner space in three steps.', steps: [['Choose a service', 'Tell us which space needs attention.'], ['Share the details', 'Send your request directly through WhatsApp.'], ['Make a plan', 'We’ll discuss availability and a personalized quote.']], aboutTag: 'OUR STORY', aboutTitle: 'A beautiful space starts with care.', aboutText: 'Sumaq Wasi means “beautiful house” in Quechua. We bring that idea to every home and business, with attention to the details that make a space feel welcoming.', aboutLink: 'Let’s talk about your space', contactTag: 'LET’S GET STARTED', contactTitle: 'Tell us about your space.', contactIntro: 'Share a few details and we’ll prepare a message for you to send on WhatsApp.', name: 'Your name', namePh: 'Full name', phone: 'Phone number', service: 'What do you need?', message: 'Tell us more', messagePh: 'Your city, size of the space, preferred date, or anything we should know…', send: 'Continue to WhatsApp', note: 'Review your message in WhatsApp and tap send. A request is not a confirmed appointment.', call: 'Prefer to call?', email: 'Send us an email', faqTag: 'GOOD TO KNOW', faqTitle: 'Questions? We’ve got you.', faqs: [['How do I get a quote?', 'Choose a service and share your details using the form. Review and send the message in WhatsApp so we can discuss your needs and pricing.'], ['Do you clean homes and businesses?', 'Yes. You can request residential or commercial cleaning. Tell us about your space and the areas that need attention.'], ['Can I request painting or remodeling?', 'Yes. Select remodeling and painting, and share the details of your project so we can discuss it with you.'], ['Is my request a confirmed appointment?', 'Not yet. We will discuss the scope, price and available dates with you before confirming.']], footer: 'Cleaning and remodeling for the spaces that matter.', rights: 'All rights reserved.', privacy: 'Privacy', terms: 'Terms', select: 'Select a service', menu: 'Menu', close: 'Close menu', msgIntro: 'Hello Sumaq Wasi! I would like a quote.', msgService: 'Service', msgName: 'Name', msgPhone: 'Phone', msgDetails: 'Details'
+  },
+  es: {
+    nav: ['Inicio', 'Servicios', 'Nosotros', 'Contacto'], quote: 'Cotiza ahora', eyebrow: 'ESPACIOS LIMPIOS. MEJORES DÍAS.', title1: 'Más espacio', title2: 'para vivir.', intro: 'Limpieza y remodelación con atención a los detalles, para tu hogar y tu lugar de trabajo.', location: 'Servicio en Connecticut y alrededores', explore: 'Explorar servicios', badge: 'Un nuevo comienzo, más fácil.', badgeSub: 'Tu espacio, bien cuidado.', servicesTag: 'LO QUE HACEMOS', servicesTitle: 'Cuidamos cada espacio.', servicesIntro: 'Cuéntanos lo que necesitas y encuentra el servicio ideal para tu espacio.', serviceButton: 'Solicitar servicio',
+    services: { residential: ['Limpieza residencial', 'Un hogar limpio y acogedor, cuidando cocinas, baños y espacios comunes.'], commercial: ['Limpieza comercial', 'Limpieza para oficinas, tiendas y espacios compartidos, adaptada a tu rutina.'], remodeling: ['Remodelación y pintura', 'Renueva tu espacio con servicios de pintura, pisos y acabados.'], other: ['Otro servicio', 'Cuéntanos lo que necesitas.'] },
+    howTag: 'FÁCIL DESDE EL INICIO', howTitle: 'Tu espacio renovado en tres pasos.', steps: [['Elige un servicio', 'Cuéntanos qué espacio necesita atención.'], ['Comparte los detalles', 'Envíanos tu solicitud directamente por WhatsApp.'], ['Hagamos un plan', 'Conversaremos sobre disponibilidad y una cotización personalizada.']], aboutTag: 'NUESTRA HISTORIA', aboutTitle: 'Un espacio bonito comienza con cuidado.', aboutText: 'Sumaq Wasi significa «casa hermosa» en quechua. Llevamos esa idea a cada hogar y negocio, cuidando los detalles que hacen que un espacio sea acogedor.', aboutLink: 'Hablemos de tu espacio', contactTag: 'COMENCEMOS', contactTitle: 'Cuéntanos sobre tu espacio.', contactIntro: 'Comparte algunos detalles y prepararemos un mensaje para que lo envíes por WhatsApp.', name: 'Tu nombre', namePh: 'Nombre completo', phone: 'Número de teléfono', service: '¿Qué necesitas?', message: 'Cuéntanos más', messagePh: 'Tu ciudad, el tamaño del espacio, la fecha que prefieres o cualquier detalle importante…', send: 'Continuar a WhatsApp', note: 'Revisa el mensaje en WhatsApp y pulsa enviar. Una solicitud no confirma una cita.', call: '¿Prefieres llamar?', email: 'Envíanos un correo', faqTag: 'BUENO SABER', faqTitle: '¿Tienes preguntas?', faqs: [['¿Cómo solicito una cotización?', 'Elige un servicio y comparte tus datos en el formulario. Revisa y envía el mensaje en WhatsApp para conversar sobre tus necesidades y el precio.'], ['¿Limpian hogares y negocios?', 'Sí. Puedes solicitar limpieza residencial o comercial. Cuéntanos sobre tu espacio y las áreas que necesitan atención.'], ['¿Puedo solicitar pintura o remodelación?', 'Sí. Selecciona remodelación y pintura y comparte los detalles de tu proyecto para conversar contigo.'], ['¿Mi solicitud confirma una cita?', 'Aún no. Conversaremos contigo sobre el alcance, el precio y las fechas disponibles antes de confirmar.']], footer: 'Limpieza y remodelación para los espacios que importan.', rights: 'Todos los derechos reservados.', privacy: 'Privacidad', terms: 'Términos', select: 'Selecciona un servicio', menu: 'Menú', close: 'Cerrar menú', msgIntro: '¡Hola Sumaq Wasi! Quisiera una cotización.', msgService: 'Servicio', msgName: 'Nombre', msgPhone: 'Teléfono', msgDetails: 'Detalles'
+  }
+};
 
 function App() {
-  const [currentView, setCurrentView] = useState<ViewState>('home');
-  const [selectedService, setSelectedService] = useState<string>('');
-  const [pendingScroll, setPendingScroll] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>(() => {
-    try { return localStorage.getItem('sumaq-language') === 'es' ? 'es' : 'en'; } catch { return 'en'; }
-  });
-  useEffect(() => {
-    document.documentElement.lang = language;
-    try { localStorage.setItem('sumaq-language', language); } catch {}
-  }, [language]);
-
-  // Handle navigation logic
-  const handleNavigate = (view: ViewState, sectionId?: string) => {
-    setCurrentView(view);
-    if (sectionId) {
-      if (view === 'home') {
-        // If we are going to home with a section, set it as pending scroll
-        setPendingScroll(sectionId);
-      }
-    } else {
-      // If just changing pages, scroll to top
-      window.scrollTo(0, 0);
-    }
+  const [language, setLanguage] = useState<Language>(() => { try { return localStorage.getItem('sumaq-language') === 'es' ? 'es' : 'en'; } catch { return 'en'; } });
+  const [view, setView] = useState<View>('home');
+  const [menu, setMenu] = useState(false);
+  const [service, setService] = useState<ServiceKey | ''>('');
+  const [name, setName] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [message, setMessage] = useState('');
+  const t = copy[language];
+  useEffect(() => { document.documentElement.lang = language; try { localStorage.setItem('sumaq-language', language); } catch {} }, [language]);
+  const go = (id: string) => { setMenu(false); if (view !== 'home') { setView('home'); window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 100); } else document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+  const choose = (key: ServiceKey) => { setService(key); go('contact'); };
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const text = `${t.msgIntro}\n\n${t.msgName}: ${name}\n${t.msgPhone}: ${contactPhone}\n${t.msgService}: ${service ? t.services[service][0] : ''}\n${t.msgDetails}: ${message}`;
+    window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
   };
-
-  // Effect to handle scrolling after view change
-  useEffect(() => {
-    if (currentView === 'home' && pendingScroll) {
-      // Small timeout to ensure DOM is rendered
-      setTimeout(() => {
-        const element = document.getElementById(pendingScroll.replace('#', ''));
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-        setPendingScroll(null);
-      }, 100);
-    }
-  }, [currentView, pendingScroll]);
-
-  const handleServiceSelect = (serviceName: string) => {
-    setSelectedService(serviceName);
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <div className="font-sans">
-      <Navbar 
-        onNavigate={handleNavigate} 
-        currentView={currentView} 
-        language={language}
-        setLanguage={setLanguage}
-      />
-      
-      <main>
-        {currentView === 'home' && (
-          <>
-            <Hero language={language} />
-            <Clients language={language} />
-            <Services onServiceSelect={handleServiceSelect} language={language} />
-            <About language={language} />
-            <Contact preselectedService={selectedService} language={language} />
-          </>
-        )}
-        
-        {currentView === 'privacy' && (
-          <PrivacyPolicy onBack={() => handleNavigate('home')} language={language} />
-        )}
-
-        {currentView === 'terms' && (
-          <TermsOfService onBack={() => handleNavigate('home')} language={language} />
-        )}
-      </main>
-
-      <Footer onNavigate={handleNavigate} language={language} />
-      <AIAssistant language={language} />
-    </div>
-  );
+  const cards: {key: ServiceKey; icon: typeof Home; image: string}[] = [
+    { key: 'residential', icon: Home, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80' },
+    { key: 'commercial', icon: Building2, image: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80' },
+    { key: 'remodeling', icon: Paintbrush, image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80' }
+  ];
+  return <div className="app-shell">
+    <header className="app-header"><div className="header-inner">
+      <button className="brand" onClick={() => go('home')} aria-label="Sumaq Wasi home"><span className="brand-mark"><Sparkles size={22}/></span><span className="brand-name">Sumaq <b>Wasi</b><small> CLEANING &amp; REMODELING</small></span></button>
+      <nav className="desktop-nav" aria-label={t.menu}>{['home','services','about','contact'].map((id,i) => <button key={id} onClick={() => go(id)}>{t.nav[i]}</button>)}</nav>
+      <div className="header-actions"><button className="language" onClick={() => setLanguage(language === 'en' ? 'es' : 'en')} aria-label={language === 'en' ? 'Cambiar a español' : 'Switch to English'}><Globe2 size={17}/><span>{language.toUpperCase()}</span><ChevronDown size={14}/></button><button className="header-quote" onClick={() => go('contact')}>{t.quote}<ArrowUpRight size={17}/></button><button className="menu-button" aria-label={menu ? t.close : t.menu} aria-expanded={menu} onClick={() => setMenu(!menu)}>{menu ? <X/> : <Menu/>}</button></div>
+    </div>{menu && <nav className="mobile-menu" aria-label={t.menu}>{['home','services','about','contact'].map((id,i) => <button key={id} onClick={() => go(id)}>{t.nav[i]}<ArrowUpRight size={16}/></button>)}</nav>}</header>
+    {view === 'home' ? <main>
+      <section id="home" className="hero"><div className="hero-inner"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-dot"/>{t.eyebrow}</div><h1>{t.title1}<br/><em>{t.title2}</em></h1><p>{t.intro}</p><div className="hero-actions"><button className="button button-dark" onClick={() => go('contact')}>{t.quote}<span><ArrowUpRight size={19}/></span></button><button className="button button-plain" onClick={() => go('services')}>{t.explore}<ArrowDown size={17}/></button></div><div className="hero-location"><MapPin size={16}/>{t.location}</div></div><div className="hero-image"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1300&q=85" alt={language === 'es' ? 'Sala luminosa y acogedora' : 'Bright, welcoming living room'}/><div className="image-card"><div className="image-card-icon"><Sparkles size={21}/></div><div><strong>{t.badge}</strong><span>{t.badgeSub}</span></div></div></div></div></section>
+      <section id="services" className="section services-section"><div className="container"><div className="section-heading"><div><span className="section-kicker">{t.servicesTag}</span><h2>{t.servicesTitle}</h2></div><p>{t.servicesIntro}</p></div><div className="service-grid">{cards.map(({key,icon: Icon,image},i) => <article className="service-card" key={key}><div className="service-image"><img src={image} alt="" loading="lazy"/><span className="service-number">0{i+1}</span><span className="service-icon"><Icon size={22}/></span></div><div className="service-content"><h3>{t.services[key][0]}</h3><p>{t.services[key][1]}</p><button onClick={() => choose(key)}>{t.serviceButton}<span><ArrowUpRight size={18}/></span></button></div></article>)}</div></div></section>
+      <section className="how-section"><div className="container how-wrap"><div><span className="section-kicker light-kicker">{t.howTag}</span><h2>{t.howTitle}</h2><button className="button button-white" onClick={() => go('contact')}>{t.quote}<ArrowUpRight size={19}/></button></div><div className="steps">{t.steps.map(([title,desc],i)=><div className="step" key={title}><span className="step-number">0{i+1}</span><div><h3>{title}</h3><p>{desc}</p></div><Check size={18}/></div>)}</div></div></section>
+      <section id="about" className="section about-section"><div className="container about-grid"><div className="about-image"><img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1100&q=80" alt={language==='es' ? 'Un espacio de hogar acogedor' : 'A welcoming home'} loading="lazy"/><div className="about-label"><Sparkles size={20}/> SUMAQ WASI LLC</div></div><div className="about-copy"><span className="section-kicker">{t.aboutTag}</span><h2>{t.aboutTitle}</h2><p>{t.aboutText}</p><button className="text-link" onClick={()=>go('contact')}>{t.aboutLink}<ArrowUpRight size={18}/></button></div></div></section>
+      <section id="contact" className="contact-section"><div className="container contact-grid"><div className="contact-copy"><span className="section-kicker">{t.contactTag}</span><h2>{t.contactTitle}</h2><p>{t.contactIntro}</p><div className="contact-method"><span><Phone size={19}/></span><div><small>{t.call}</small><a href="tel:+18608655828">+1 (860) 865-5828</a></div></div><div className="contact-method"><span><Mail size={19}/></span><div><small>{t.email}</small><a href="mailto:contacto@sumaqwasi.com">contacto@sumaqwasi.com</a></div></div></div><form className="quote-form" onSubmit={submit}><div className="form-top"><div><span className="form-kicker">SUMAQ WASI LLC</span><h3>{t.quote}</h3></div><span className="form-icon"><ClipboardList size={22}/></span></div><div className="form-grid"><label>{t.name}<input required autoComplete="name" value={name} onChange={e=>setName(e.target.value)} placeholder={t.namePh}/></label><label>{t.phone}<input required type="tel" autoComplete="tel" value={contactPhone} onChange={e=>setContactPhone(e.target.value)} placeholder="(860) 000-0000"/></label><label className="full">{t.service}<select required value={service} onChange={e=>setService(e.target.value as ServiceKey | '')}><option value="">{t.select}</option>{(['residential','commercial','remodeling','other'] as ServiceKey[]).map(k=><option key={k} value={k}>{t.services[k][0]}</option>)}</select></label><label className="full">{t.message}<textarea rows={4} value={message} onChange={e=>setMessage(e.target.value)} placeholder={t.messagePh}/></label></div><button className="button form-submit" type="submit"><MessageCircle size={19}/>{t.send}<ArrowUpRight size={18}/></button><p className="form-note">{t.note}</p></form></div></section>
+      <section className="section faq-section"><div className="container faq-grid"><div><span className="section-kicker">{t.faqTag}</span><h2>{t.faqTitle}</h2></div><div className="faq-list">{t.faqs.map(([q,a])=><details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></div></section>
+    </main> : <main className="legal-view">{view === 'privacy' ? <PrivacyPolicy language={language} onBack={()=>{setView('home');window.scrollTo(0,0)}}/> : <TermsOfService language={language} onBack={()=>{setView('home');window.scrollTo(0,0)}}/>}</main>}
+    <footer className="footer"><div className="container"><div className="footer-main"><div><div className="footer-brand"><span className="brand-mark"><Sparkles size={21}/></span><strong>Sumaq Wasi <small>LLC</small></strong></div><p>{t.footer}</p></div><div className="footer-links">{['services','about','contact'].map((id,i)=><button key={id} onClick={()=>go(id)}>{t.nav[i+1]}</button>)}<a href={`https://wa.me/${phone}`}>WhatsApp</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Sumaq Wasi LLC. {t.rights}</span><div><button onClick={()=>{setView('privacy');window.scrollTo(0,0)}}>{t.privacy}</button><button onClick={()=>{setView('terms');window.scrollTo(0,0)}}>{t.terms}</button></div></div></div></footer>
+    <div className="assistant-wrap"><AIAssistant language={language}/></div>
+    <nav className="bottom-nav" aria-label={t.menu}><button onClick={()=>go('home')}><Home size={20}/><span>{t.nav[0]}</span></button><button onClick={()=>go('services')}><Sparkles size={20}/><span>{t.nav[1]}</span></button><button onClick={()=>go('about')}><Clock3 size={20}/><span>{t.nav[2]}</span></button><button className="bottom-contact" onClick={()=>go('contact')}><MessageCircle size={20}/><span>{t.nav[3]}</span></button></nav>
+  </div>;
 }
-
 export default App;
