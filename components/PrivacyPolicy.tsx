@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC<Props> = ({ onBack, language }) => {
         {
           title: "1. Information Collection",
           text: "We collect information that you provide directly to us when you request a quote, schedule a service, or communicate with us. This may include:",
-          list: ["Contact information (Name, phone number, email).", "Property details (Address, approximate size, specific cleaning or remodeling needs).", "Communications sent via our web form or WhatsApp."]
+          list: ["Contact information (Name, phone number, email).", "Property details (Address, approximate size, specific cleaning or remodeling needs).", "Communications sent via our web form, WhatsApp or AI chat. Chat questions and recent conversation are processed by Vercel AI Gateway and the Google Gemini model to generate answers."]
         },
         {
           title: "2. Use of Information",
@@ -49,7 +49,7 @@ const PrivacyPolicy: React.FC<Props> = ({ onBack, language }) => {
         {
           title: "1. Recopilación de Información",
           text: "Recopilamos información que usted nos proporciona directamente cuando solicita una cotización, programa un servicio o se comunica con nosotros. Esto puede incluir:",
-          list: ["Información de contacto (Nombre, número de teléfono, correo electrónico).", "Detalles de la propiedad (Dirección, tamaño aproximado, necesidades específicas de limpieza o remodelación).", "Comunicaciones enviadas a través de nuestro formulario web o WhatsApp."]
+          list: ["Información de contacto (Nombre, número de teléfono, correo electrónico).", "Detalles de la propiedad (Dirección, tamaño aproximado, necesidades específicas de limpieza o remodelación).", "Comunicaciones enviadas a través de nuestro formulario web, WhatsApp o chat de IA. Las preguntas y la conversación reciente del chat se procesan mediante Vercel AI Gateway y el modelo Google Gemini para generar respuestas."]
         },
         {
           title: "2. Uso de la Información",
