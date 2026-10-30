@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC<Props> = ({ onBack, language }) => {
         {
           title: "1. Information Collection",
           text: "We collect information that you provide directly to us when you request a quote, schedule a service, or communicate with us. This may include:",
-          list: ["Contact information (Name, phone number, email).", "Property details (Address, approximate size, specific cleaning or remodeling needs).", "Communications sent via our web form, WhatsApp or AI chat. Chat questions and recent conversation are processed by Vercel AI Gateway and the Google Gemini model to generate answers."]
+          list: ["Contact information (Name, phone number, email).", "Property details (Address, approximate size, specific cleaning or remodeling needs).", "Communications sent via our web form, WhatsApp or AI chat. Chat questions and recent conversation are sent through our server to Google Gemini to generate answers. On Google’s free API tier, Google may use chat content to improve its products; please do not share sensitive information in this chat."]
         },
         {
           title: "2. Use of Information",
@@ -49,7 +49,7 @@ const PrivacyPolicy: React.FC<Props> = ({ onBack, language }) => {
         {
           title: "1. Recopilación de Información",
           text: "Recopilamos información que usted nos proporciona directamente cuando solicita una cotización, programa un servicio o se comunica con nosotros. Esto puede incluir:",
-          list: ["Información de contacto (Nombre, número de teléfono, correo electrónico).", "Detalles de la propiedad (Dirección, tamaño aproximado, necesidades específicas de limpieza o remodelación).", "Comunicaciones enviadas a través de nuestro formulario web, WhatsApp o chat de IA. Las preguntas y la conversación reciente del chat se procesan mediante Vercel AI Gateway y el modelo Google Gemini para generar respuestas."]
+          list: ["Información de contacto (Nombre, número de teléfono, correo electrónico).", "Detalles de la propiedad (Dirección, tamaño aproximado, necesidades específicas de limpieza o remodelación).", "Comunicaciones enviadas a través de nuestro formulario web, WhatsApp o chat de IA. Las preguntas y la conversación reciente del chat se envían a través de nuestro servidor a Google Gemini para generar respuestas. En el nivel gratuito de la API, Google puede usar el contenido para mejorar sus productos; no compartas información sensible en este chat."]
         },
         {
           title: "2. Uso de la Información",
