@@ -1,143 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, ArrowUpRight } from 'lucide-react';
 import { sendMessageToAssistant } from '../services/geminiService';
-import { Language } from '../App';
+import type { Language } from '../App';
 
-interface AIProps {
-  language: Language;
-}
-
-const AIAssistant: React.FC<AIProps> = ({ language }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<{role: 'user' | 'bot', text: string}[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  // Reset initial message when language changes
+export default function AIAssistant({ language }: { language: Language }) {
+  const es = language === 'es';
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<{role: 'user' | 'bot'; text: string}[]>([]);
+  const [input, setInput] = useState('');
+  const log = useRef<HTMLDivElement>(null);
+  const field = useRef<HTMLInputElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const greeting = language === 'en'
-      ? "Hi! I'm the Sumaq Wasi virtual assistant. How can I help you with your cleaning or remodeling needs today?"
-      : "¡Hola! Soy el asistente virtual de Sumaq Wasi. ¿En qué puedo ayudarte hoy con tu limpieza o remodelación?";
-    
-    setMessages([{role: 'bot', text: greeting}]);
+    setMessages([{ role: 'bot', text: es ? '¡Hola! Bienvenido a Sumaq Wasi. Soy una guía automática de consultas frecuentes. Puedo orientarte sobre nuestros servicios y cómo solicitar una cotización.' : 'Hi! Welcome to Sumaq Wasi. I’m an automated FAQ guide. I can help you explore our services and request a quote.' }]);
   }, [language]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => { if (open) field.current?.focus(); }, [open]);
+  useEffect(() => { if (open && log.current) log.current.scrollTop = log.current.scrollHeight; }, [messages, open]);
+  const close = () => { setOpen(false); trigger.current?.focus(); };
+  const ask = (value: string) => {
+    const question = value.trim(); if (!question) return;
+    const response = sendMessageToAssistant(question, [], language);
+    setMessages(previous => [...previous.slice(-48), { role: 'user', text: question }, { role: 'bot', text: response }]);
+    setInput('');
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOpen]);
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const userMsg = inputValue;
-    setInputValue('');
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setIsLoading(true);
-
-    // Build simple history context for the API
-    const history = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`);
-    
-    const responseText = await sendMessageToAssistant(userMsg, history, language);
-    
-    setMessages(prev => [...prev, { role: 'bot', text: responseText }]);
-    setIsLoading(false);
-  };
-
-  const t = {
-    title: language === 'en' ? 'Sumaq Wasi Assistant' : 'Asistente Sumaq Wasi',
-    online: language === 'en' ? 'Online with Gemini AI' : 'En línea con Gemini AI',
-    placeholder: language === 'en' ? 'Type your query...' : 'Escribe tu consulta...',
-    label: language === 'en' ? 'Chat with assistant' : 'Chat con asistente'
-  };
-
-  return (
-    <>
-      {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-40 bg-brand-600 text-white p-4 rounded-full shadow-2xl hover:bg-brand-700 transition-all transform hover:scale-110 flex items-center justify-center ${isOpen ? 'hidden' : 'flex'}`}
-        aria-label={t.label}
-      >
-        <MessageSquare className="w-6 h-6" />
-      </button>
-
-      {/* Chat Window */}
-      <div 
-        className={`fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl z-50 flex flex-col transition-all duration-300 origin-bottom-right border border-slate-100 ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}
-        style={{ height: '500px', maxHeight: '80vh' }}
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-brand-600 to-brand-500 p-4 rounded-t-2xl flex justify-between items-center text-white">
-          <div className="flex items-center space-x-2">
-            <div className="bg-white/20 p-1.5 rounded-full">
-               <Bot className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">{t.title}</h3>
-              <p className="text-xs text-brand-100 flex items-center">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-1"></span>
-                {t.online}
-              </p>
-            </div>
-          </div>
-          <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div 
-                className={`max-w-[80%] p-3 rounded-2xl text-sm ${
-                  msg.role === 'user' 
-                    ? 'bg-brand-600 text-white rounded-br-none' 
-                    : 'bg-white text-slate-700 shadow-sm border border-slate-100 rounded-bl-none'
-                }`}
-              >
-                {msg.text}
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-white p-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100">
-                <Loader2 className="w-5 h-5 text-brand-500 animate-spin" />
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input */}
-        <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-100 bg-white rounded-b-2xl">
-          <div className="flex items-center space-x-2 bg-slate-100 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-brand-500/50 transition-shadow">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={t.placeholder}
-              className="flex-1 bg-transparent border-none focus:ring-0 text-sm outline-none text-slate-700 placeholder:text-slate-400"
-            />
-            <button 
-              type="submit" 
-              disabled={isLoading || !inputValue.trim()}
-              className="p-1.5 bg-brand-600 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-700 transition-colors"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
-  );
-};
-
-export default AIAssistant;
+  const lastQuestion = [...messages].reverse().find(item => item.role === 'user')?.text;
+  const whatsappText = `${es ? '¡Hola Sumaq Wasi! Quisiera ayuda con una consulta.' : 'Hello Sumaq Wasi! I would like help with a question.'}${lastQuestion ? '\n\n' + lastQuestion : ''}`;
+  return <>
+    <button ref={trigger} className={`sw-chat-trigger${open ? ' is-hidden' : ''}`} onClick={() => setOpen(true)} aria-label={es ? 'Abrir asistente' : 'Open assistant'} aria-expanded={open} aria-controls="sw-chat"><MessageCircle size={24}/></button>
+    {open && <section id="sw-chat" className="sw-chat-panel" role="dialog" aria-labelledby="sw-chat-title" onKeyDown={event => { if (event.key === 'Escape') close(); }}>
+      <header className="sw-chat-header"><span className="sw-chat-avatar"><Sparkles size={22}/></span><div><h3 id="sw-chat-title">Sumaq Wasi</h3><p>{es ? 'Guía de consultas frecuentes' : 'Automated FAQ guide'}</p></div><button onClick={close} aria-label={es ? 'Cerrar asistente' : 'Close assistant'}><X size={21}/></button></header>
+      <div className="sw-chat-log" ref={log} role="log" aria-live="polite" aria-relevant="additions">{messages.map((message,index) => <div key={index} className={`sw-chat-message ${message.role}`}><span className="sw-chat-sr">{message.role === 'user' ? (es ? 'Tú: ' : 'You: ') : 'Sumaq Wasi: '}</span>{message.text}</div>)}</div>
+      <div className="sw-chat-quick" aria-label={es ? 'Consultas rápidas' : 'Quick questions'}>{(es ? ['Servicios','Cotización','Cobertura','Disponibilidad'] : ['Services','Quote','Coverage','Availability']).map(label => <button key={label} onClick={() => ask(label)}>{label}</button>)}</div>
+      <a className="sw-chat-whatsapp" href={`https://wa.me/18608655828?text=${encodeURIComponent(whatsappText)}`} target="_blank" rel="noopener noreferrer"><MessageCircle size={17}/>{es ? 'Hablar con el equipo' : 'Talk to our team'}<ArrowUpRight size={17}/></a>
+      <form className="sw-chat-compose" onSubmit={event => { event.preventDefault(); ask(input); }}><label className="sw-chat-sr" htmlFor="sw-chat-input">{es ? 'Tu consulta' : 'Your question'}</label><input ref={field} id="sw-chat-input" autoComplete="off" value={input} maxLength={1000} onChange={event => setInput(event.target.value)} placeholder={es ? 'Escribe tu consulta…' : 'Type your question…'}/><button type="submit" disabled={!input.trim()} aria-label={es ? 'Enviar consulta' : 'Send question'}><Send size={18}/></button></form>
+    </section>}
+  </>;
+}
