@@ -66,13 +66,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentView, language, setL
       className={`fixed w-full z-50 transition-all duration-500 ease-in-out ${
         isScrolled || currentView !== 'home'
           ? 'bg-white/90 backdrop-blur-md shadow-lg py-3 border-b border-white/20' 
-          : 'bg-transparent py-6'
+          : 'bg-slate-900/80 backdrop-blur-md py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-full">
           {/* Logo */}
-          <div 
+          <button type="button" aria-label="Sumaq Wasi — Home"
             className="flex-shrink-0 flex items-center group cursor-pointer"
             onClick={() => onNavigate('home')}
           >
@@ -82,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentView, language, setL
             <span className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${isScrolled || currentView !== 'home' ? 'text-slate-800' : 'text-white'}`}>
               Sumaq<span className="text-brand-400">Wasi</span>
             </span>
-          </div>
+          </button>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
@@ -146,6 +146,9 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentView, language, setL
             </button>
 
             <button
+              type="button"
+              aria-expanded={isOpen}
+              aria-label={isOpen ? (language === 'es' ? 'Cerrar menú' : 'Close menu') : (language === 'es' ? 'Abrir menú' : 'Open menu')}
               onClick={() => setIsOpen(!isOpen)}
               className={`inline-flex items-center justify-center p-2 rounded-lg transition-colors duration-300 ${
                 isScrolled || currentView !== 'home' ? 'text-slate-700 hover:bg-slate-100' : 'text-white hover:bg-white/20'
@@ -166,7 +169,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentView, language, setL
       />
 
       {/* Mobile Menu Panel */}
-      <div 
+      {isOpen && <div 
         className={`absolute top-full left-0 w-full bg-white shadow-2xl transition-all duration-300 ease-in-out md:hidden z-50 overflow-hidden ${
           isOpen ? 'max-h-96 border-b border-slate-100' : 'max-h-0'
         }`}
@@ -193,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentView, language, setL
             </a>
           </div>
         </div>
-      </div>
+      </div>}
     </nav>
   );
 };

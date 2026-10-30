@@ -89,10 +89,10 @@ const Contact: React.FC<ContactProps> = ({ preselectedService, language }) => {
     
     // Construct WhatsApp Message
     const phoneNumber = "18608655828"; // Updated business number
-    const text = `${t.msg.intro}%0A%0A*${t.msg.name}:* ${formData.name}%0A*Email:* ${formData.email}%0A*${t.msg.phone}:* ${formData.phone}%0A*${t.msg.service}:* ${formData.service}%0A*${t.msg.msg}:* ${formData.message}`;
+    const text = `${t.msg.intro}\n\n${t.msg.name}: ${formData.name}\nEmail: ${formData.email}\n${t.msg.phone}: ${formData.phone}\n${t.msg.service}: ${formData.service}\n${t.msg.msg}: ${formData.message}`;
     
     // Open WhatsApp
-    window.open(`https://wa.me/${phoneNumber}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

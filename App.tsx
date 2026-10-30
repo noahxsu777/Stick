@@ -17,7 +17,13 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [selectedService, setSelectedService] = useState<string>('');
   const [pendingScroll, setPendingScroll] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>('en'); // Default to English
+  const [language, setLanguage] = useState<Language>(() => {
+    try { return localStorage.getItem('sumaq-language') === 'es' ? 'es' : 'en'; } catch { return 'en'; }
+  });
+  useEffect(() => {
+    document.documentElement.lang = language;
+    try { localStorage.setItem('sumaq-language', language); } catch {}
+  }, [language]);
 
   // Handle navigation logic
   const handleNavigate = (view: ViewState, sectionId?: string) => {
